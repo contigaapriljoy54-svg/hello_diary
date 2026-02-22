@@ -178,7 +178,7 @@ button.add:hover {
 
 <body>
 <button id="logoutBtn">Logout</button>
-<h2>My Diary</h2>
+<h2>Write Something About Your Day</h2>
 
 <div class="container">
   <textarea id="noteContent" rows="3" placeholder="Write your note here..."></textarea>
@@ -200,48 +200,70 @@ logoutBtn.addEventListener('click', ()=>{
   localStorage.clear();
   window.location.href='login.html';
 });
+const BASE_URL = 'https://hellodiary-production.up.railway.app';
 
-async function loadNotes(){
-  const res = await fetch(`https://localhost:3000/notes/${userId}`, {
+async function loadNotes() {
+  const res = await fetch(`${BASE_URL}/notes/${userId}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const notes = await res.json();
-  notesContainer.innerHTML='';
-  notes.forEach(note=>{
-    const div = document.createElement('div'); div.className='note';
+  notesContainer.innerHTML = '';
+
+  notes.forEach(note => {
+    const div = document.createElement('div');
+    div.className = 'note';
     div.innerHTML = `<div class="date">${new Date(note.createdAt).toLocaleString()}</div>
                      <span>${note.content}</span>
                      <div class="button-container">
                        <button class="edit">Edit</button>
                        <button class="delete">Delete</button>
                      </div>`;
+
     const editBtn = div.querySelector('.edit');
     const deleteBtn = div.querySelector('.delete');
 
-    editBtn.onclick = async ()=>{
+    editBtn.onclick = async () => {
       const newContent = prompt('Edit note:', note.content);
-      if(newContent){
-        await fetch(`https://localhost:3000/notes/${userId}/${note.id}`,{
-          method:'PATCH',
-          headers:{ 'Content-Type':'application/json','Authorization': `Bearer ${token}` },
-          body:JSON.stringify({ content:newContent })
+      if (newContent) {
+        await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ content: newContent })
         });
         loadNotes();
       }
     };
-    deleteBtn.onclick = async ()=>{
-      if(confirm('Delete this note?')){
-        await fetch(`https://localhost:3000/notes/${userId}/${note.id}`,{
-          method:'DELETE',
-          headers:{ 'Authorization': `Bearer ${token}` }
+
+    deleteBtn.onclick = async () => {
+      if (confirm('Delete this note?')) {
+        await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         loadNotes();
       }
     };
+
     notesContainer.appendChild(div);
   });
 }
 
+addBtn.addEventListener('click', async () => {
+  const content = noteContent.value.trim();
+  if (!content) return alert('Note cannot be empty');
+
+  await fetch(`${BASE_URL}/notes/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ userId: Number(userId), title: 'Note', content })
+  });
+
+  noteContent.value = '';
+  loadNotes();
+});
+
+// Initial load
+loadNotes();
 addBtn.addEventListener('click', async ()=>{
   const content = noteContent.value.trim();
   if(!content) return alert('Note cannot be empty');

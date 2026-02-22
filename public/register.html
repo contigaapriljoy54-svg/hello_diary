@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Georgia', serif;
+  background:#d8c3a5;
+  display:flex; justify-content:center; align-items:center;
+  min-height:100vh;
+}
+.container {
+  background: rgba(255, 248, 240, 0.88);
+  padding:30px; border-radius:18px;
+  width:90%; max-width:380px;
+  display:flex; flex-direction:column;
+}
+h2 { text-align:center; margin-bottom:25px; color:#5a3e2b; }
+input { padding:12px; margin:10px 0; border-radius:8px; border:1px solid #d8c3a5; }
+button {
+  padding:12px; margin-top:15px;
+  background: linear-gradient(135deg, #a47148, #6f4e37);
+  color:#fff; border:none; border-radius:8px; cursor:pointer;
+}
+button:hover { transform: translateY(-2px); }
+p { text-align:center; margin-top:18px; }
+a { color:#6f4e37; font-weight:bold; text-decoration:none; }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>Register Here</h2>
+  <input type="text" id="name" placeholder="Full Name">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button id="registerBtn">Register</button>
+  <p>Already have an account? <a href="login.html">Login</a></p>
+</div>
+<script>
+const BASE_URL = 'https://hellodiary-production.up.railway.app';
+
+const registerBtn = document.getElementById('registerBtn');
+registerBtn.addEventListener('click', async () => {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if (!name || !email || !password) return alert('All fields are required');
+
+  try {
+    const res = await fetch(`${BASE_URL}/users/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: email, password })
+    });
+
+    if (res.ok) {
+      alert('Registered successfully!');
+      window.location.href = 'login.html';
+    } else {
+      const data = await res.json();
+      alert(data.message || 'Registration failed');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Server error');
+  }
+});
+</script>
+</body>
+</html>

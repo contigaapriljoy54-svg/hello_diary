@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config'; // fixed
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { NotesModule } from './notes/notes.module';
@@ -14,9 +14,9 @@ import { NotesModule } from './notes/notes.module';
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  autoLoadEntities: true,  // ✅ automatically loads Note and User entities
-  synchronize: true,       // ✅ creates tables automatically
-  logging: true, // ✅ this prints SQL queries
+  autoLoadEntities: true,
+  synchronize: true,
+  logging: true,
 }),
     UsersModule,
     NotesModule,
