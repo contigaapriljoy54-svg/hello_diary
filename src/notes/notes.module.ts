@@ -1,4 +1,4 @@
-// notes.module.ts
+// src/notes/notes.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotesService } from './notes.service';
@@ -10,6 +10,5 @@ import { UsersModule } from '../users/users.module';
   imports: [TypeOrmModule.forFeature([Note]), UsersModule],
   providers: [NotesService],
   controllers: [NotesController],
-  exports: [NotesService],
 })
 export class NotesModule {}

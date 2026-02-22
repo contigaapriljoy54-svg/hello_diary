@@ -14,8 +14,8 @@ import { NotesModule } from './notes/notes.module';
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  autoLoadEntities: true,
-  synchronize: true,
+  autoLoadEntities: true,  // ✅ automatically loads Note and User entities
+  synchronize: true,       // ✅ creates tables automatically
   logging: true, // ✅ this prints SQL queries
 }),
     UsersModule,
