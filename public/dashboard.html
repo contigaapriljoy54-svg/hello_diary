@@ -192,108 +192,63 @@ if (!userId) {
 }
 
 const notesContainer = document.getElementById('notesContainer');
-const addBtn = document.getElementById('addBtn');
-const noteContent = document.getElementById('noteContent');
-const logoutBtn = document.getElementById('logoutBtn');
+const editBtn = div.querySelector('.edit');
+const deleteBtn = div.querySelector('.delete');
+const contentSpan = div.querySelector('span');
+const buttonContainer = div.querySelector('.button-container');
 
-const BASE_URL = 'https://hellodiary-production.up.railway.app';
+editBtn.onclick = () => {
+  // Prevent multiple edits
+  if (div.classList.contains('editing')) return;
+  div.classList.add('editing');
 
-/* ---------- LOGOUT ---------- */
-logoutBtn.addEventListener('click', () => {
-  localStorage.clear();
-  window.location.href = 'login.html';
-});
+  const originalContent = contentSpan.textContent;
 
-async function loadNotes() {
-  try {
-    const res = await fetch(`${BASE_URL}/notes/${userId}`);
-    if (!res.ok) throw new Error('Failed to load notes');
+  // Create textarea
+  const textarea = document.createElement('textarea');
+  textarea.value = originalContent;
+  textarea.rows = 3;
+  textarea.style.width = '100%';
 
-    const notes = await res.json();
-    notesContainer.innerHTML = '';
+  // Create Save button
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = 'Save';
+  saveBtn.className = 'edit';
 
-    notes.forEach(note => {
-      const div = document.createElement('div');
-      div.className = 'note';
+  // Create Cancel button
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.className = 'delete';
 
-      div.innerHTML = `
-        <div class="date">${new Date(note.createdAt).toLocaleString()}</div>
-        <span>${note.content}</span>
-        <div class="button-container">
-          <button class="edit">Edit</button>
-          <button class="delete">Delete</button>
-        </div>
-      `;
+  // Replace text with textarea
+  div.replaceChild(textarea, contentSpan);
 
-      div.querySelector('.edit').onclick = async () => {
-        const newContent = prompt('Edit note:', note.content);
-        if (!newContent || !newContent.trim()) return;
+  // Replace buttons
+  buttonContainer.innerHTML = '';
+  buttonContainer.append(saveBtn, cancelBtn);
 
-        const res = await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: newContent.trim() }),
-        });
+  saveBtn.onclick = async () => {
+    const newContent = textarea.value.trim();
+    if (!newContent) return alert('Note cannot be empty');
 
-        if (!res.ok) {
-          alert('Failed to update note');
-          return;
-        }
-
-        loadNotes();
-      };
-
-      div.querySelector('.delete').onclick = async () => {
-        if (!confirm('Delete this note?')) return;
-
-        const res = await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
-          method: 'DELETE',
-        });
-
-        if (!res.ok) {
-          alert('Failed to delete note');
-          return;
-        }
-
-        loadNotes();
-      };
-
-      notesContainer.appendChild(div);
-    });
-
-  } catch (err) {
-    console.error(err);
-    alert('Error loading notes');
-  }
-}
-
-addBtn.addEventListener('click', async () => {
-  const content = noteContent.value.trim();
-  if (!content) return alert('Note cannot be empty');
-
-  try {
-    const res = await fetch(`${BASE_URL}/notes/create`, {
-      method: 'POST',
+    const res = await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: Number(userId),
-        title: 'Note',
-        content,
-      }),
+      body: JSON.stringify({ content: newContent }),
     });
 
-    if (!res.ok) throw new Error('Failed to add note');
+    if (!res.ok) {
+      alert('Failed to update note');
+      return;
+    }
 
-    noteContent.value = '';
-    loadNotes();
+    loadNotes(); // reload clean state
+  };
 
-  } catch (err) {
-    console.error(err);
-    alert('Failed to add note');
-  }
-});
-
-loadNotes();
+  cancelBtn.onclick = () => {
+    loadNotes(); // restore original view
+  };
+};
 </script>
 
 </body>

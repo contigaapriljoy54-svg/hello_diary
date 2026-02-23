@@ -9,7 +9,7 @@ export class Note {
   @Column()
   title: string;
 
-  @Column({ type: 'longtext' })
+  @Column({ type: 'longtext', nullable: false })
 content: string;
 
   @ManyToOne(() => User, user => user.notes)
