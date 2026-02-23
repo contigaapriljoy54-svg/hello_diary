@@ -187,7 +187,9 @@ button.add:hover {
 </div>
 <script>
 const userId = localStorage.getItem('userId');
-if (!userId) window.location.href = 'login.html';
+if (!userId) {
+  window.location.href = 'login.html';
+}
 
 const notesContainer = document.getElementById('notesContainer');
 const addBtn = document.getElementById('addBtn');

@@ -12,22 +12,21 @@ export class UsersController {
   }
 
   @Post('login')
-  async login(@Body() body: { username: string; password: string }) {
-    const user = await this.usersService.findByUsername(body.username);
-
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isMatch = await bcrypt.compare(body.password, user.password);
-
-    if (!isMatch) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    return {
-      message: 'Login successful',
-      userId: user.id,
-    };
+async login(@Body() body: { username: string; password: string }) {
+  const user = await this.usersService.findByUsername(body.username);
+  if (!user) {
+    return { message: 'Invalid credentials' };
   }
+
+  const isMatch = await bcrypt.compare(body.password, user.password);
+  if (!isMatch) {
+    return { message: 'Invalid credentials' };
+  }
+
+  return {
+    message: 'Login successful',
+    userId: user.id,
+    token: 'dummy-token-for-now',
+  };
+}
 }
