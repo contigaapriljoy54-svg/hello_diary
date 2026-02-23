@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 
 @Entity()
@@ -9,9 +15,12 @@ export class Note {
   @Column()
   title: string;
 
-  @Column({ type: 'longtext', nullable: false })
-content: string;
+  @Column({ type: 'longtext' })
+  content: string;
 
-  @ManyToOne(() => User, user => user.notes)
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ManyToOne(() => User, user => user.notes, { onDelete: 'CASCADE' })
   user: User;
 }

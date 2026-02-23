@@ -212,6 +212,9 @@ async function loadNotes() {
     const notes = await res.json();
     notesContainer.innerHTML = '';
 
+    // ✅ NEWEST FIRST
+    notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     notes.forEach(note => {
       const div = document.createElement('div');
       div.className = 'note';
@@ -238,10 +241,8 @@ async function loadNotes() {
         if (div.classList.contains('editing')) return;
         div.classList.add('editing');
 
-        const originalContent = contentSpan.textContent;
-
         const textarea = document.createElement('textarea');
-        textarea.value = originalContent;
+        textarea.value = contentSpan.textContent;
         textarea.rows = 3;
         textarea.style.width = '100%';
 
@@ -275,9 +276,7 @@ async function loadNotes() {
           loadNotes();
         };
 
-        cancelBtn.onclick = () => {
-          loadNotes();
-        };
+        cancelBtn.onclick = loadNotes;
       };
 
       deleteBtn.onclick = async () => {
@@ -308,8 +307,6 @@ addBtn.addEventListener('click', async () => {
   const content = noteContent.value.trim();
   if (!content) return alert('Note cannot be empty');
 
-  const createdAt = new Date().toISOString();
-
   try {
     const res = await fetch(`${BASE_URL}/notes/create`, {
       method: 'POST',
@@ -317,8 +314,7 @@ addBtn.addEventListener('click', async () => {
       body: JSON.stringify({
         userId: Number(userId),
         title: 'Note',
-        content,
-        createdAt,
+        content
       }),
     });
 
