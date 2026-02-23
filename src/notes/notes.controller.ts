@@ -1,10 +1,9 @@
-// src/notes/notes.controller.ts
 import { Controller, Post, Body, Get, Param, Patch, Delete, NotFoundException } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { UsersService } from '../users/users.service';
 
 @Controller('notes')
-export class NotesController {  // ✅ Must say `export class NotesController`
+export class NotesController {  
   constructor(private notesService: NotesService, private usersService: UsersService) {}
 
   @Post('create')

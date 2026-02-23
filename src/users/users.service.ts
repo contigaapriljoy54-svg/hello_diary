@@ -1,8 +1,7 @@
-// src/users/users.service.ts
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './user.entity';
+import { User } from '../users/user.entity'; 
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class UsersService {
     return this.usersRepo.findOneBy({ username });
   }
 
-  // ✅ This must exist
   async findById(id: number): Promise<User | null> {
     return this.usersRepo.findOneBy({ id });
   }

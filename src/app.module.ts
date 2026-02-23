@@ -10,14 +10,26 @@ import { UsersModule } from './users/users.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      url: process.env.MYSQL_URL, 
+
+      ...(process.env.MYSQL_URL
+        ? { url: process.env.MYSQL_URL }
+        : {
+            host: process.env.MYSQLHOST,
+            port: Number(process.env.MYSQLPORT),
+            username: process.env.MYSQLUSER,
+            password: process.env.MYSQLPASSWORD,
+            database: process.env.MYSQLDATABASE,
+          }),
+
       autoLoadEntities: true,
-      synchronize: true, 
+      synchronize: true,
     }),
+
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/',
     }),
+
     UsersModule,
   ],
   controllers: [AppController],
