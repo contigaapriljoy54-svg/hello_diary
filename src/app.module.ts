@@ -12,17 +12,7 @@ import { NotesModule } from './notes/notes.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-
-      ...(process.env.MYSQL_URL
-        ? { url: process.env.MYSQL_URL }
-        : {
-            host: process.env.MYSQLHOST,
-            port: Number(process.env.MYSQLPORT),
-            username: process.env.MYSQLUSER,
-            password: process.env.MYSQLPASSWORD,
-            database: process.env.MYSQLDATABASE,
-          }),
-
+      url: process.env.MYSQL_URL,
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -33,7 +23,7 @@ import { NotesModule } from './notes/notes.module';
     }),
 
     UsersModule,
-    NotesModule, // ✅ required so User#notes metadata exists
+    NotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
