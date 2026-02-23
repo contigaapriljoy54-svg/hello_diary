@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { UsersModule } from './users/users.module';
     }),
 
     UsersModule,
+    NotesModule, // ✅ required so User#notes metadata exists
   ],
   controllers: [AppController],
   providers: [AppService],
