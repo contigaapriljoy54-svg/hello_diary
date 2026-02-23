@@ -4,8 +4,10 @@ import { UsersService } from '../users/users.service';
 
 @Controller('notes')
 export class NotesController {  
-  constructor(private notesService: NotesService, private usersService: UsersService) {}
-
+ constructor(
+  private readonly notesService: NotesService,
+  private readonly usersService: UsersService,
+) {}
   @Post('create')
   async create(@Body() body: { userId: number; title: string; content: string }) {
     const user = await this.usersService.findById(body.userId);
