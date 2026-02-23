@@ -15,7 +15,7 @@ import { NotesModule } from './notes/notes.module';
       url: process.env.MYSQL_URL,
       autoLoadEntities: true,
       synchronize: true,
-    }),
+    }), 
 
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
