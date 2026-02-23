@@ -185,63 +185,61 @@ button.add:hover {
   <button class="add" id="addBtn">Add Note</button>
   <div id="notesContainer"></div>
 </div>
-
 <script>
-const token = localStorage.getItem('token');
 const userId = localStorage.getItem('userId');
-if(!token || !userId) { window.location.href='login.html'; }
+if (!userId) window.location.href = 'login.html';
 
 const notesContainer = document.getElementById('notesContainer');
 const addBtn = document.getElementById('addBtn');
 const noteContent = document.getElementById('noteContent');
 const logoutBtn = document.getElementById('logoutBtn');
 
-logoutBtn.addEventListener('click', ()=>{
-  localStorage.clear();
-  window.location.href='login.html';
-});
 const BASE_URL = 'https://hellodiary-production.up.railway.app';
 
+logoutBtn.addEventListener('click', () => {
+  localStorage.clear();
+  window.location.href = 'login.html';
+});
+
 async function loadNotes() {
-  const res = await fetch(`${BASE_URL}/notes/${userId}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
+  const res = await fetch(`${BASE_URL}/notes/${userId}`);
   const notes = await res.json();
+
   notesContainer.innerHTML = '';
 
   notes.forEach(note => {
     const div = document.createElement('div');
     div.className = 'note';
-    div.innerHTML = `<div class="date">${new Date(note.createdAt).toLocaleString()}</div>
-                     <span>${note.content}</span>
-                     <div class="button-container">
-                       <button class="edit">Edit</button>
-                       <button class="delete">Delete</button>
-                     </div>`;
+    div.innerHTML = `
+      <div class="date">${new Date(note.createdAt).toLocaleString()}</div>
+      <span>${note.content}</span>
+      <div class="button-container">
+        <button class="edit">Edit</button>
+        <button class="delete">Delete</button>
+      </div>
+    `;
 
-    const editBtn = div.querySelector('.edit');
-    const deleteBtn = div.querySelector('.delete');
-
-    editBtn.onclick = async () => {
+    div.querySelector('.edit').onclick = async () => {
       const newContent = prompt('Edit note:', note.content);
-      if (newContent) {
-        await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ content: newContent })
-        });
-        loadNotes();
-      }
+      if (!newContent) return;
+
+      await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: newContent }),
+      });
+
+      loadNotes();
     };
 
-    deleteBtn.onclick = async () => {
-      if (confirm('Delete this note?')) {
-        await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        loadNotes();
-      }
+    div.querySelector('.delete').onclick = async () => {
+      if (!confirm('Delete this note?')) return;
+
+      await fetch(`${BASE_URL}/notes/${userId}/${note.id}`, {
+        method: 'DELETE',
+      });
+
+      loadNotes();
     };
 
     notesContainer.appendChild(div);
@@ -254,25 +252,11 @@ addBtn.addEventListener('click', async () => {
 
   await fetch(`${BASE_URL}/notes/create`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ userId: Number(userId), title: 'Note', content })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: Number(userId), title: 'Note', content }),
   });
 
   noteContent.value = '';
-  loadNotes();
-});
-
-// Initial load
-loadNotes();
-addBtn.addEventListener('click', async ()=>{
-  const content = noteContent.value.trim();
-  if(!content) return alert('Note cannot be empty');
-  await fetch('https://localhost:3000/notes/create',{
-    method:'POST',
-    headers:{ 'Content-Type':'application/json','Authorization': `Bearer ${token}` },
-    body:JSON.stringify({ userId: Number(userId), title:'Note', content })
-  });
-  noteContent.value='';
   loadNotes();
 });
 
